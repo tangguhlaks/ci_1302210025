@@ -19,13 +19,17 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-
       - name: Check for empty line on line 5
         run: |
           if [ "$(sed -n '5p' pom.xml | xargs)" == "" ]; then
             echo "Line 5 is empty in pom.xml"
             exit 1
           fi
+
+      - name: Debug line 5 of pom.xml
+        run: |
+          echo "Content of line 5: '$(sed -n '5p' pom.xml | xargs)'"
+
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
