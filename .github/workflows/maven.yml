@@ -1,7 +1,4 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Build Project
+name: Build and Test Project
 
 on:
   push:
@@ -10,15 +7,30 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Check for empty line on line 5
+        run: |
+          if [ "$(sed -n '5p' pom.xml | xargs)" == "" ]; then
+            echo "Line 5 is empty in pom.xml"
+            exit 1
+          fi
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Run tests with Maven
+        run: mvn test
+
+
